@@ -291,23 +291,7 @@ const DrivesPage: React.FC = () => {
         )}
       </main>
       
-      {/* For testing purposes - buttons to open modals directly */}
-      <div className="fixed top-20 right-8 z-50 flex flex-col space-y-2">
-        <button
-          onClick={() => setCreateModalOpen(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded-md text-sm"
-          id="test-create-drive-button"
-        >
-          Open Create Drive Modal
-        </button>
-        <button
-          onClick={() => setScheduleModalOpen(true)}
-          className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm"
-          id="test-schedule-drive-button"
-        >
-          Open Schedule Drive Modal
-        </button>
-      </div>
+      {/* Test buttons removed for production */}
       
       {/* Create Drive Modal */}
       <CreateDriveModal 
