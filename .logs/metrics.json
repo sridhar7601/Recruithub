@@ -1,12 +1,12 @@
 {
   "provider": "bedrockanthropic",
-  "total_cost": 7.711926000000001,
+  "total_cost": 8.174598000000001,
   "total_time": 0,
-  "total_token": 2481966,
+  "total_token": 2635214,
   "drive-management": {
-    "cost": 7.711926000000001,
-    "input_tokens": 2459797,
-    "output_tokens": 22169,
-    "total_tokens": 2481966
+    "cost": 8.174598000000001,
+    "input_tokens": 2612801,
+    "output_tokens": 22413,
+    "total_tokens": 2635214
   }
 }
