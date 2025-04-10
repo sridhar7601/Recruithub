@@ -1,0 +1,42 @@
+/* Base styles for the application */
+.App {
+  text-align: center;
+}
+
+/* Apply font family from Tailwind */
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+/* Override focus styles for better accessibility */
+*:focus {
+  outline: none;
+}
+
+/* Default button styles */
+button {
+  cursor: pointer;
+}
+
+/* Transitions for smoother interactions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Animation for spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

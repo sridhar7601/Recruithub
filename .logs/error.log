@@ -1,0 +1,224 @@
+
+Time: 2025-04-10T06:45:45.144Z
+Type: Error
+Context: execute_command
+Stack: Error: Command error logs include ERROR. Output:
+Could not kill process on port 3000. No process running on port.
+
+> react-template@0.1.0 start
+> react-scripts start
+
+Starting the development server...
+
+Compiled with warnings.
+
+[eslint] 
+src/pages/drives/DrivesPage.tsx
+  Line 24:6:  React Hook useEffect has a missing dependency: 'fetchDrives'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/pages/drives/DrivesPage.tsx
+  Line 24:6:  React Hook useEffect has a missing dependency: 'fetchDrives'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+
+Error Logs:
+(node:18329) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:18329) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[0;33mOne of your dependencies, babel-preset-react-app, is importing the
+"@babel/plugin-proposal-private-property-in-object" package without
+declaring it in its dependencies. This is currently working because
+"@babel/plugin-proposal-private-property-in-object" is already in your
+node_modules folder for unrelated reasons, but it [1mmay break at any time[0;33m.
+
+babel-preset-react-app is part of the create-react-app project, [1mwhich
+is not maintianed anymore[0;33m. It is thus unlikely that this bug will
+ever be fixed. Add "@babel/plugin-proposal-private-property-in-object" to
+your devDependencies to work around this error. This will make this message
+go away.[0m
+  
+ERROR in src/components/drives/DriveCard.tsx:48:64
+TS2339: Property 'studentCount' does not exist on type 'DriveDocument'.
+    46 |         <div className="flex justify-between">
+    47 |           <span className="text-sm text-blue-600">Students enrolled</span>
+  > 48 |           <span className="font-semibold text-blue-600">{drive.studentCount || 0}</span>
+       |                                                                ^^^^^^^^^^^^
+    49 |         </div>
+    50 |         
+    51 |         <div className="flex justify-between">
+
+ERROR in src/components/drives/DriveCard.tsx:58:65
+TS2339: Property 'activeRound' does not exist on type 'DriveDocument'.
+    56 |         <div className="flex justify-between">
+    57 |           <span className="text-sm text-green-600">Active round</span>
+  > 58 |           <span className="font-semibold text-green-600">{drive.activeRound || 1}</span>
+       |                                                                 ^^^^^^^^^^^
+    59 |         </div>
+    60 |       </div>
+    61 |     </div>
+
+ERROR in src/pages/drives/DrivesPage.tsx:73:44
+TS2322: Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    71 |     try {
+    72 |       const newDrive = await createDrive(driveData);
+  > 73 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    74 |       setCreateModalOpen(false);
+    75 |     } catch (err) {
+    76 |       console.error('Failed to create drive:', err);
+
+ERROR in src/pages/drives/DrivesPage.tsx:73:44
+TS2322: Type 'DriveDocument | { studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; ... 12 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+    Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    71 |     try {
+    72 |       const newDrive = await createDrive(driveData);
+  > 73 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    74 |       setCreateModalOpen(false);
+    75 |     } catch (err) {
+    76 |       console.error('Failed to create drive:', err);
+
+ERROR in src/pages/drives/DrivesPage.tsx:83:44
+TS2322: Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    81 |     try {
+    82 |       const newDrive = await createDrive(driveData);
+  > 83 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    84 |       setScheduleModalOpen(false);
+    85 |     } catch (err) {
+    86 |       console.error('Failed to schedule drive:', err);
+
+ERROR in src/pages/drives/DrivesPage.tsx:83:44
+TS2322: Type 'DriveDocument | { studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; ... 12 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+    Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    81 |     try {
+    82 |       const newDrive = await createDrive(driveData);
+  > 83 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    84 |       setScheduleModalOpen(false);
+    85 |     } catch (err) {
+    86 |       console.error('Failed to schedule drive:', err);
+
+
+    at Socket.<anonymous> (file:///Users/sridharsk/Documents/modernize-ui-v01/src/tools/index.js:72:32)
+    at Socket.emit (node:events:507:28)
+    at addChunk (node:internal/streams/readable:559:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:510:3)
+    at Readable.push (node:internal/streams/readable:390:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:189:23)
+command: npx kill-port 3000 && npm start
+Message: Command error logs include ERROR. Output:
+Could not kill process on port 3000. No process running on port.
+
+> react-template@0.1.0 start
+> react-scripts start
+
+Starting the development server...
+
+Compiled with warnings.
+
+[eslint] 
+src/pages/drives/DrivesPage.tsx
+  Line 24:6:  React Hook useEffect has a missing dependency: 'fetchDrives'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/pages/drives/DrivesPage.tsx
+  Line 24:6:  React Hook useEffect has a missing dependency: 'fetchDrives'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+webpack compiled with 1 warning
+
+Error Logs:
+(node:18329) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:18329) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+[0;33mOne of your dependencies, babel-preset-react-app, is importing the
+"@babel/plugin-proposal-private-property-in-object" package without
+declaring it in its dependencies. This is currently working because
+"@babel/plugin-proposal-private-property-in-object" is already in your
+node_modules folder for unrelated reasons, but it [1mmay break at any time[0;33m.
+
+babel-preset-react-app is part of the create-react-app project, [1mwhich
+is not maintianed anymore[0;33m. It is thus unlikely that this bug will
+ever be fixed. Add "@babel/plugin-proposal-private-property-in-object" to
+your devDependencies to work around this error. This will make this message
+go away.[0m
+  
+ERROR in src/components/drives/DriveCard.tsx:48:64
+TS2339: Property 'studentCount' does not exist on type 'DriveDocument'.
+    46 |         <div className="flex justify-between">
+    47 |           <span className="text-sm text-blue-600">Students enrolled</span>
+  > 48 |           <span className="font-semibold text-blue-600">{drive.studentCount || 0}</span>
+       |                                                                ^^^^^^^^^^^^
+    49 |         </div>
+    50 |         
+    51 |         <div className="flex justify-between">
+
+ERROR in src/components/drives/DriveCard.tsx:58:65
+TS2339: Property 'activeRound' does not exist on type 'DriveDocument'.
+    56 |         <div className="flex justify-between">
+    57 |           <span className="text-sm text-green-600">Active round</span>
+  > 58 |           <span className="font-semibold text-green-600">{drive.activeRound || 1}</span>
+       |                                                                 ^^^^^^^^^^^
+    59 |         </div>
+    60 |       </div>
+    61 |     </div>
+
+ERROR in src/pages/drives/DrivesPage.tsx:73:44
+TS2322: Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    71 |     try {
+    72 |       const newDrive = await createDrive(driveData);
+  > 73 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    74 |       setCreateModalOpen(false);
+    75 |     } catch (err) {
+    76 |       console.error('Failed to create drive:', err);
+
+ERROR in src/pages/drives/DrivesPage.tsx:73:44
+TS2322: Type 'DriveDocument | { studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; ... 12 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+    Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    71 |     try {
+    72 |       const newDrive = await createDrive(driveData);
+  > 73 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    74 |       setCreateModalOpen(false);
+    75 |     } catch (err) {
+    76 |       console.error('Failed to create drive:', err);
+
+ERROR in src/pages/drives/DrivesPage.tsx:83:44
+TS2322: Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    81 |     try {
+    82 |       const newDrive = await createDrive(driveData);
+  > 83 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    84 |       setScheduleModalOpen(false);
+    85 |     } catch (err) {
+    86 |       console.error('Failed to schedule drive:', err);
+
+ERROR in src/pages/drives/DrivesPage.tsx:83:44
+TS2322: Type 'DriveDocument | { studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; ... 12 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+  Type '{ studentCount: number; activeRound: number; driveId: string; name: string; collegeId: string; collegeName: string; role: "Associate Engineer" | "Business Analyst"; practice: "Application Development" | "DevOps" | "PMO" | "BaUX"; ... 11 more ...; updatedTimestamp: string; }' is not assignable to type 'DriveDocument'.
+    Object literal may only specify known properties, and 'studentCount' does not exist in type 'DriveDocument'.
+    81 |     try {
+    82 |       const newDrive = await createDrive(driveData);
+  > 83 |       setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+       |                                            ^^^^^^^^^^^^^^^
+    84 |       setScheduleModalOpen(false);
+    85 |     } catch (err) {
+    86 |       console.error('Failed to schedule drive:', err);
+
+
+-------------------
