@@ -32,6 +32,7 @@ const CreateOrScheduleDropdown: React.FC<CreateOrScheduleDropdownProps> = ({
           <button
             onClick={handleCreateDrive}
             className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+            id="create-drive-button"
           >
             Create drive
           </button>
@@ -40,6 +41,7 @@ const CreateOrScheduleDropdown: React.FC<CreateOrScheduleDropdownProps> = ({
           <button
             onClick={handleScheduleDrive}
             className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+            id="schedule-drive-button"
           >
             Schedule drive
           </button>
