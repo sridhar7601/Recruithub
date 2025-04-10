@@ -291,6 +291,24 @@ const DrivesPage: React.FC = () => {
         )}
       </main>
       
+      {/* For testing purposes - buttons to open modals directly */}
+      <div className="fixed top-20 right-8 z-50 flex flex-col space-y-2">
+        <button
+          onClick={() => setCreateModalOpen(true)}
+          className="bg-green-600 text-white px-4 py-2 rounded-md text-sm"
+          id="test-create-drive-button"
+        >
+          Open Create Drive Modal
+        </button>
+        <button
+          onClick={() => setScheduleModalOpen(true)}
+          className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm"
+          id="test-schedule-drive-button"
+        >
+          Open Schedule Drive Modal
+        </button>
+      </div>
+      
       {/* Create Drive Modal */}
       <CreateDriveModal 
         isOpen={createModalOpen}
@@ -327,6 +345,7 @@ const DrivesPage: React.FC = () => {
                       setDropdownOpen(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    id="create-drive-dropdown-button"
                   >
                     Create drive
                   </button>
@@ -338,6 +357,7 @@ const DrivesPage: React.FC = () => {
                       setDropdownOpen(false);
                     }}
                     className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                    id="schedule-drive-dropdown-button"
                   >
                     Schedule drive
                   </button>
