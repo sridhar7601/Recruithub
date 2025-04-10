@@ -727,3 +727,20 @@ Stack: Error: ENOENT: no such file or directory, open 'output/Recruit-hub/src/pa
 input: output/Recruit-hub/src/pages/auth/Login.tsx
 Message: ENOENT: no such file or directory, open 'output/Recruit-hub/src/pages/auth/Login.tsx'
 -------------------
+
+Time: 2025-04-10T09:25:59.024Z
+Type: Error
+Context: read_file
+Stack: TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string or an instance of Buffer or URL. Received undefined
+    at Object.readFileSync (node:fs:441:14)
+    at readFileContent (file:///Users/sridharsk/Documents/modernize-ui-v01/src/utils/fileSystem.js:78:19)
+    at ReadFileTool._call (file:///Users/sridharsk/Documents/modernize-ui-v01/src/tools/index.js:142:29)
+    at LLMHandler.executeTool (file:///Users/sridharsk/Documents/modernize-ui-v01/src/llmHandler.js:160:35)
+    at LLMHandler.handleToolExecution (file:///Users/sridharsk/Documents/modernize-ui-v01/src/llmHandler.js:189:47)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async LLMHandler.sendMessage (file:///Users/sridharsk/Documents/modernize-ui-v01/src/llmHandler.js:402:42)
+    at async ChatHandler.processModule (file:///Users/sridharsk/Documents/modernize-ui-v01/src/chatHandler.js:265:30)
+    at async Application.run (file:///Users/sridharsk/Documents/modernize-ui-v01/src/index.js:94:29)
+input: src/types.ts
+Message: The "path" argument must be of type string or an instance of Buffer or URL. Received undefined
+-------------------
