@@ -5,6 +5,12 @@
       "firstOccurrence": "2025-04-10T06:46:04.153Z",
       "lastOccurrence": "2025-04-10T06:46:04.153Z",
       "occurrences": 1
+    },
+    {
+      "error": "Cannot find module '../../assets/Logo-presidio.png' or its corresponding type declarations.",
+      "firstOccurrence": "2025-04-10T08:29:58.790Z",
+      "lastOccurrence": "2025-04-10T08:35:47.838Z",
+      "occurrences": 3
     }
   ]
 }
