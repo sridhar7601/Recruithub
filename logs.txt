@@ -28,3 +28,8 @@ Attempting to click element...
 Click successful
 Waiting for animations to complete...
 Successfully completed interaction with selector: xpath///button[contains(text(), 'Create or schedule drive')]
+Console Message: %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
+Console Message: API error, using mock data: JSHandle@object
+Console Message: Failed to load resource: net::ERR_CONNECTION_REFUSED
+Console Message: API error, using mock data: JSHandle@object
+Console Message: Failed to load resource: net::ERR_CONNECTION_REFUSED
