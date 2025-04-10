@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BellIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import CreateOrScheduleDropdown from '../drives/CreateOrScheduleDropdown';
+import CreateDriveModal from '../drives/CreateDriveModal';
+import ScheduleDriveModal from '../drives/ScheduleDriveModal';
+import { CreateDriveDto } from '../../types';
+import { createDrive } from '../../services/driveService';
 
 interface HeaderProps {
   userName?: string;
@@ -13,6 +17,28 @@ const Header: React.FC<HeaderProps> = ({
   userRole = "Admin" 
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  
+  const handleCreateDrive = async (driveData: CreateDriveDto) => {
+    try {
+      const newDrive = await createDrive(driveData);
+      console.log('Drive created:', newDrive);
+      setCreateModalOpen(false);
+    } catch (err) {
+      console.error('Failed to create drive:', err);
+    }
+  };
+  
+  const handleScheduleDrive = async (driveData: CreateDriveDto & { members: string[] }) => {
+    try {
+      const newDrive = await createDrive(driveData);
+      console.log('Drive scheduled:', newDrive);
+      setScheduleModalOpen(false);
+    } catch (err) {
+      console.error('Failed to schedule drive:', err);
+    }
+  };
 
   return (
     <header className="bg-presidio-blue text-white py-4 px-6">
@@ -60,8 +86,28 @@ const Header: React.FC<HeaderProps> = ({
               Create or schedule drive
               <ChevronDownIcon className="ml-2 h-4 w-4" />
             </button>
-            {dropdownOpen && <CreateOrScheduleDropdown onClose={() => setDropdownOpen(false)} />}
+            {dropdownOpen && (
+              <CreateOrScheduleDropdown 
+                onClose={() => setDropdownOpen(false)} 
+                onCreateDrive={() => setCreateModalOpen(true)}
+                onScheduleDrive={() => setScheduleModalOpen(true)}
+              />
+            )}
           </div>
+          
+          {/* Create Drive Modal */}
+          <CreateDriveModal 
+            isOpen={createModalOpen}
+            onClose={() => setCreateModalOpen(false)}
+            onSubmit={handleCreateDrive}
+          />
+          
+          {/* Schedule Drive Modal */}
+          <ScheduleDriveModal 
+            isOpen={scheduleModalOpen}
+            onClose={() => setScheduleModalOpen(false)}
+            onSubmit={handleScheduleDrive}
+          />
 
           <button className="text-white hover:text-white/80">
             <BellIcon className="h-6 w-6" />
