@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
-import DriveCard from '../../components/drives/DriveCard';
+import DriveCard, { DriveCardProps } from '../../components/drives/DriveCard';
 import CreateDriveModal from '../../components/drives/CreateDriveModal';
 import ScheduleDriveModal from '../../components/drives/ScheduleDriveModal';
 import { DriveDocument, CreateDriveDto } from '../../types';
@@ -26,154 +26,38 @@ const DrivesPage: React.FC = () => {
   const fetchDrives = async () => {
     try {
       setLoading(true);
+      setError(null);
       
-      // Try to fetch from API
-      try {
-        const response = await getDrives(1, 100);
-        
-        // Filter drives based on active tab
-        const filteredDrives = response.drives.filter(drive => 
-          activeTab === 'active' ? !drive.isCompleted : drive.isCompleted
-        );
-        
-        // Add mock student count and active round for UI display
-        const enhancedDrives = filteredDrives.map(drive => ({
-          ...drive,
-          studentCount: Math.floor(Math.random() * 2000) + 100,
-          activeRound: Math.floor(Math.random() * 4) + 1
-        }));
-        
-        setDrives(enhancedDrives);
-        setError(null);
-      } catch (apiErr) {
-        console.error('API error, using mock data:', apiErr);
-        
-        // Mock data for demonstration
-        const mockDrives: DriveDocument[] = [
-          {
-            driveId: '1',
-            name: 'Ethiraj Drive 2025',
-            collegeId: '101',
-            collegeName: 'Ethiraj College, Chennai',
-            role: 'Associate Engineer',
-            practice: 'Application Development',
-            startDate: new Date().toISOString(),
-            primarySpocId: '201',
-            primarySpocEmail: 'spoc1@example.com',
-            primarySpocName: 'John Doe',
-            isPinned: true,
-            isCompleted: false,
-            isActive: true,
-            createdTimestamp: new Date().toISOString(),
-            updatedTimestamp: new Date().toISOString(),
-            studentCount: 347,
-            activeRound: 2
-          },
-          {
-            driveId: '2',
-            name: 'Loyola Drive 2025',
-            collegeId: '102',
-            collegeName: 'Loyola College',
-            role: 'Associate Engineer',
-            practice: 'Application Development',
-            startDate: new Date().toISOString(),
-            primarySpocId: '202',
-            primarySpocEmail: 'spoc2@example.com',
-            primarySpocName: 'Jane Smith',
-            isPinned: true,
-            isCompleted: false,
-            isActive: true,
-            createdTimestamp: new Date().toISOString(),
-            updatedTimestamp: new Date().toISOString(),
-            studentCount: 1931,
-            activeRound: 2
-          },
-          {
-            driveId: '3',
-            name: 'Riverbend Drive 2025',
-            collegeId: '103',
-            collegeName: 'Riverbend college',
-            role: 'Business Analyst',
-            practice: 'BaUX',
-            startDate: new Date().toISOString(),
-            primarySpocId: '203',
-            primarySpocEmail: 'spoc3@example.com',
-            primarySpocName: 'Robert Johnson',
-            isPinned: true,
-            isCompleted: false,
-            isActive: true,
-            createdTimestamp: new Date().toISOString(),
-            updatedTimestamp: new Date().toISOString(),
-            studentCount: 491,
-            activeRound: 1
-          },
-          {
-            driveId: '4',
-            name: 'Northwood Drive 2025',
-            collegeId: '104',
-            collegeName: 'Northwood College',
-            role: 'Associate Engineer',
-            practice: 'DevOps',
-            startDate: new Date().toISOString(),
-            primarySpocId: '204',
-            primarySpocEmail: 'spoc4@example.com',
-            primarySpocName: 'Sarah Williams',
-            isPinned: true,
-            isCompleted: false,
-            isActive: true,
-            createdTimestamp: new Date().toISOString(),
-            updatedTimestamp: new Date().toISOString(),
-            studentCount: 212,
-            activeRound: 4
-          },
-          {
-            driveId: '5',
-            name: 'Brighton Drive 2025',
-            collegeId: '105',
-            collegeName: 'Brighton College',
-            role: 'Business Analyst',
-            practice: 'PMO',
-            startDate: new Date().toISOString(),
-            primarySpocId: '205',
-            primarySpocEmail: 'spoc5@example.com',
-            primarySpocName: 'Michael Brown',
-            isPinned: false,
-            isCompleted: false,
-            isActive: true,
-            createdTimestamp: new Date().toISOString(),
-            updatedTimestamp: new Date().toISOString(),
-            studentCount: 382,
-            activeRound: 3
-          },
-          {
-            driveId: '6',
-            name: 'Loyola Drive 2025',
-            collegeId: '106',
-            collegeName: 'Loyola College',
-            role: 'Associate Engineer',
-            practice: 'Application Development',
-            startDate: new Date().toISOString(),
-            primarySpocId: '206',
-            primarySpocEmail: 'spoc6@example.com',
-            primarySpocName: 'Lisa Davis',
-            isPinned: false,
-            isCompleted: false,
-            isActive: true,
-            createdTimestamp: new Date().toISOString(),
-            updatedTimestamp: new Date().toISOString(),
-            studentCount: 1931,
-            activeRound: 2
-          }
-        ];
-        
-        // Filter based on active tab
-        const filteredMockDrives = mockDrives.filter(drive => 
-          activeTab === 'active' ? !drive.isCompleted : drive.isCompleted
-        );
-        
-        setDrives(filteredMockDrives);
-        setError(null);
+      console.log('Fetching drives...');
+      const response = await getDrives(1, 100);
+      console.log('API Response:', response);
+      
+      if (!response || !response.drives) {
+        console.error('Invalid response format:', response);
+        setError('Invalid response format from API');
+        setDrives([]);
+        return;
       }
+      
+      // Filter drives based on active tab
+      const filteredDrives = response.drives.filter(drive => 
+        activeTab === 'active' ? !drive.isCompleted : drive.isCompleted
+      );
+      console.log('Filtered drives:', filteredDrives);
+      
+      // Add student count and active round for UI display if not present
+      const enhancedDrives = filteredDrives.map(drive => {
+        const roundCount = drive.rounds && drive.rounds.length > 0 ? drive.rounds.length : 1;
+        return {
+          ...drive,
+          // Use existing values or generate placeholders if not available from API
+          studentCount: drive.studentCount !== undefined ? drive.studentCount : Math.floor(Math.random() * 2000) + 100,
+          activeRound: drive.activeRound !== undefined ? drive.activeRound : roundCount
+        };
+      });
+      console.log('Enhanced drives:', enhancedDrives);
+      
+      setDrives(enhancedDrives);
     } catch (err) {
       console.error('Failed to fetch drives:', err);
       setError('Failed to load drives. Please try again later.');
@@ -201,21 +85,77 @@ const DrivesPage: React.FC = () => {
 
   const handleCreateDrive = async (driveData: CreateDriveDto) => {
     try {
+      console.log('Creating drive with data:', driveData);
       const newDrive = await createDrive(driveData);
-      setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+      
+      // Add UI display properties
+      const roundCount = newDrive.rounds && newDrive.rounds.length > 0 ? newDrive.rounds.length : 1;
+      const enhancedDrive: DriveDocument = {
+        ...newDrive,
+        studentCount: 0,
+        activeRound: roundCount
+      };
+      
+      // Add to drives list and sort by creation date (newest first)
+      const updatedDrives = [enhancedDrive, ...drives]
+        .sort((a, b) => new Date(b.createdTimestamp).getTime() - new Date(a.createdTimestamp).getTime());
+      
+      setDrives(updatedDrives);
       setCreateModalOpen(false);
-    } catch (err) {
+      
+      // Show success message (could be implemented with a toast notification library)
+      console.log('Drive created successfully:', newDrive.name);
+      
+      // Refresh the drives list to ensure we have the latest data
+      fetchDrives();
+    } catch (err: any) {
       console.error('Failed to create drive:', err);
+      
+      // Show more detailed error information if available
+      if (err.response && err.response.data) {
+        console.error('Error details:', err.response.data);
+      }
+      
+      // Error handling is done in the modal component
+      throw err;
     }
   };
 
   const handleScheduleDrive = async (driveData: CreateDriveDto & { members: string[] }) => {
     try {
+      console.log('Scheduling drive with data:', driveData);
       const newDrive = await createDrive(driveData);
-      setDrives([...drives, { ...newDrive, studentCount: 0, activeRound: 1 }]);
+      
+      // Add UI display properties
+      const roundCount = newDrive.rounds && newDrive.rounds.length > 0 ? newDrive.rounds.length : 1;
+      const enhancedDrive: DriveDocument = {
+        ...newDrive,
+        studentCount: 0,
+        activeRound: roundCount
+      };
+      
+      // Add to drives list and sort by creation date (newest first)
+      const updatedDrives = [enhancedDrive, ...drives]
+        .sort((a, b) => new Date(b.createdTimestamp).getTime() - new Date(a.createdTimestamp).getTime());
+      
+      setDrives(updatedDrives);
       setScheduleModalOpen(false);
-    } catch (err) {
+      
+      // Show success message (could be implemented with a toast notification library)
+      console.log('Drive scheduled successfully:', newDrive.name);
+      
+      // Refresh the drives list to ensure we have the latest data
+      fetchDrives();
+    } catch (err: any) {
       console.error('Failed to schedule drive:', err);
+      
+      // Show more detailed error information if available
+      if (err.response && err.response.data) {
+        console.error('Error details:', err.response.data);
+      }
+      
+      // Error handling is done in the modal component
+      throw err;
     }
   };
 

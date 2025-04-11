@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { CreateDriveDto, CollegeResponseDto } from '../../types';
 import { getColleges } from '../../services/collegeService';
+import { getAvailableSpocs, SpocDto } from '../../services/panelService';
 
 interface CreateDriveModalProps {
   isOpen: boolean;
@@ -12,7 +13,13 @@ interface CreateDriveModalProps {
 
 const CreateDriveModal: React.FC<CreateDriveModalProps> = ({ isOpen, onClose, onSubmit }) => {
   const [colleges, setColleges] = useState<CollegeResponseDto[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [spocs, setSpocs] = useState<SpocDto[]>([]);
+  const [loading, setLoading] = useState({
+    colleges: false,
+    spocs: false,
+    submit: false
+  });
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [formData, setFormData] = useState<Partial<CreateDriveDto>>({
     practice: 'Application Development',
     role: 'Associate Engineer',
@@ -25,27 +32,67 @@ const CreateDriveModal: React.FC<CreateDriveModalProps> = ({ isOpen, onClose, on
     primarySpocName: '',
   });
   
-  // Fetch colleges on component mount
+  // Fetch colleges and SPOCs on component mount
   useEffect(() => {
-    const fetchColleges = async () => {
+    const fetchData = async () => {
+      if (!isOpen) return;
+      
+      // Fetch colleges
       try {
-        setLoading(true);
+        setLoading(prev => ({ ...prev, colleges: true }));
         const response = await getColleges(1, 100);
         setColleges(response.items);
       } catch (error) {
         console.error('Failed to fetch colleges:', error);
       } finally {
-        setLoading(false);
+        setLoading(prev => ({ ...prev, colleges: false }));
+      }
+      
+      // Fetch SPOCs
+      try {
+        setLoading(prev => ({ ...prev, spocs: true }));
+        const availableSpocs = await getAvailableSpocs();
+        setSpocs(availableSpocs);
+      } catch (error) {
+        console.error('Failed to fetch SPOCs:', error);
+      } finally {
+        setLoading(prev => ({ ...prev, spocs: false }));
       }
     };
     
-    if (isOpen) {
-      fetchColleges();
-    }
+    fetchData();
   }, [isOpen]);
+
+  const validateForm = (): boolean => {
+    const newErrors: {[key: string]: string} = {};
+    
+    if (!formData.name) {
+      newErrors.name = 'Drive name is required';
+    }
+    
+    if (!formData.collegeId) {
+      newErrors.collegeId = 'College selection is required';
+    }
+    
+    if (!formData.primarySpocId) {
+      newErrors.primarySpocId = 'SPOC selection is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // Clear error for this field if it exists
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
     
     // Special handling for college selection
     if (name === 'collegeSelect' && value) {
@@ -60,29 +107,51 @@ const CreateDriveModal: React.FC<CreateDriveModalProps> = ({ isOpen, onClose, on
       return;
     }
     
+    // Special handling for SPOC selection
+    if (name === 'spocSelect' && value) {
+      const selectedSpoc = spocs.find(spoc => spoc.employeeId === value);
+      if (selectedSpoc) {
+        setFormData({
+          ...formData,
+          primarySpocId: selectedSpoc.uuid, // Use UUID instead of employeeId
+          primarySpocEmail: selectedSpoc.emailId,
+          primarySpocName: selectedSpoc.name
+        });
+      }
+      return;
+    }
+    
     setFormData({
       ...formData,
       [name]: value
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Mock SPOC data for demo purposes - in a real app, this would come from a selection
-    const mockSpoc = {
-      primarySpocId: "123e4567-e89b-12d3-a456-426614174000",
-      primarySpocEmail: "primary.spoc@example.com",
-      primarySpocName: formData.primarySpocName || "Nirmalmahesh Subramani"
-    };
+    if (!validateForm()) {
+      return;
+    }
     
-    const completeFormData: CreateDriveDto = {
-      ...formData as any,
-      ...mockSpoc,
-      startDate: new Date().toISOString()
-    };
-    
-    onSubmit(completeFormData);
+    try {
+      setLoading(prev => ({ ...prev, submit: true }));
+      
+      const completeFormData: CreateDriveDto = {
+        ...formData as any,
+        startDate:"2025-06-15T09:00:00Z", // Example date, replace with actual date
+      };
+      
+      await onSubmit(completeFormData);
+    } catch (error) {
+      console.error('Failed to create drive:', error);
+      setErrors(prev => ({
+        ...prev,
+        submit: 'Failed to create drive. Please try again.'
+      }));
+    } finally {
+      setLoading(prev => ({ ...prev, submit: false }));
+    }
   };
 
   return (
@@ -168,31 +237,60 @@ const CreateDriveModal: React.FC<CreateDriveModalProps> = ({ isOpen, onClose, on
               </div>
               
               <div>
-                <label htmlFor="primarySpocName" className="block text-sm font-medium text-gray-700">SPOC</label>
-                <input
-                  type="text"
-                  name="primarySpocName"
-                  id="primarySpocName"
-                  value={formData.primarySpocName}
-                  onChange={handleChange}
-                  placeholder="Nirmalmahesh Subramani | Lead engineer"
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
+                <label htmlFor="spocSelect" className="block text-sm font-medium text-gray-700">SPOC</label>
+                <div className="relative">
+                  <select
+                    id="spocSelect"
+                    name="spocSelect"
+                    value={formData.primarySpocId || ''}
+                    onChange={handleChange}
+                    className={`mt-1 block w-full pl-3 pr-10 py-2 text-base border ${errors.primarySpocId ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-md shadow-sm focus:outline-none sm:text-sm`}
+                  >
+                    <option value="">Select a SPOC</option>
+                    {spocs.map(spoc => (
+                      <option key={spoc.employeeId} value={spoc.employeeId}>
+                        {spoc.name} | {spoc.emailId}
+                      </option>
+                    ))}
+                  </select>
+                  {errors.primarySpocId && (
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red-500" aria-hidden="true" />
+                    </div>
+                  )}
+                </div>
+                {loading.spocs && <p className="text-sm text-gray-500 mt-1">Loading SPOCs...</p>}
+                {errors.primarySpocId && <p className="mt-2 text-sm text-red-600">{errors.primarySpocId}</p>}
               </div>
+              
+              {errors.submit && (
+                <div className="rounded-md bg-red-50 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <ExclamationCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-red-800">{errors.submit}</h3>
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <div className="pt-4 border-t border-gray-200 flex justify-end space-x-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  disabled={loading.submit}
+                  className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  disabled={loading.submit}
+                  className="bg-blue-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
                 >
-                  Create
+                  {loading.submit ? 'Creating...' : 'Create'}
                 </button>
               </div>
             </form>

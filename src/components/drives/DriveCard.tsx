@@ -3,7 +3,7 @@ import { DriveDocument } from '../../types';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 
-interface DriveCardProps {
+export interface DriveCardProps {
   drive: DriveDocument;
   onTogglePin?: (driveId: string, isPinned: boolean) => void;
   onCardClick?: (driveId: string) => void;
