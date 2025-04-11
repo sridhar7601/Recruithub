@@ -1,8 +1,8 @@
 {
   "provider": "bedrockanthropic",
-  "total_cost": 44.824143,
+  "total_cost": 45.766605,
   "total_time": 0,
-  "total_token": 14620425,
+  "total_token": 14932807,
   "drive-management": {
     "cost": 18.204611999999994,
     "input_tokens": 5925129,
@@ -22,9 +22,9 @@
     "total_tokens": 2394022
   },
   "student-management": {
-    "cost": 6.6965340000000015,
-    "input_tokens": 2092878,
-    "output_tokens": 27860,
-    "total_tokens": 2120738
+    "cost": 7.6389960000000015,
+    "input_tokens": 2404817,
+    "output_tokens": 28303,
+    "total_tokens": 2433120
   }
 }
