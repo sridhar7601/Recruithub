@@ -36,7 +36,7 @@ function App() {
             <DrivesPage />
           </ProtectedRoute>
         } />
-        <Route path="/drives/:driveId/students" element={
+        <Route path="/drives/:driveId" element={
           <ProtectedRoute>
             <StudentDataPage />
           </ProtectedRoute>

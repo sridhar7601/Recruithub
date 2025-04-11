@@ -198,6 +198,9 @@ const StudentImportModal: React.FC<StudentImportModalProps> = ({ driveId, onClos
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
               <p className="text-gray-700">Importing student data...</p>
               <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
+              <div className="w-full max-w-xs bg-gray-200 rounded-full h-2.5 mt-4">
+                <div className="bg-blue-600 h-2.5 rounded-full w-3/4 animate-pulse"></div>
+              </div>
             </div>
           )}
 

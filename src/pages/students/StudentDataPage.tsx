@@ -84,7 +84,7 @@ const StudentDataPage: React.FC = () => {
       setLoading(false);
       console.error('Error fetching students:', err);
     }
-  }, [driveId, filters, search, selectedDepartments, selectedBatches]);
+  }, [driveId, filters, search, selectedDepartments, selectedBatches, setStudents, setTotalStudents, setTotalPages, setEmptyState, setLoading, setError]);
 
   useEffect(() => {
     fetchStudents();
@@ -97,7 +97,7 @@ const StudentDataPage: React.FC = () => {
       setPage(1);
       setFilters(prev => ({ ...prev, page: 1 }));
     }, 500),
-    []
+    [setSearch, setPage, setFilters]
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,7 +252,7 @@ const StudentDataPage: React.FC = () => {
           
           {/* Search and filter bar */}
           <div className="p-4 flex items-center gap-4">
-            <div className="relative flex-1">
+            <div className="relative w-64">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
@@ -264,6 +264,11 @@ const StudentDataPage: React.FC = () => {
                 placeholder="Search" 
                 onChange={handleSearchChange}
               />
+              {search && (
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                  <div className="h-4 w-4 border-t-2 border-blue-500 border-r-2 rounded-full animate-spin"></div>
+                </div>
+              )}
             </div>
             <button 
               onClick={handleFilterToggle}
@@ -393,7 +398,7 @@ const StudentDataPage: React.FC = () => {
       {/* Filter Modal */}
       {showFilter && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-end z-50">
-          <div className="bg-white w-full max-w-md h-full overflow-y-auto">
+          <div className="bg-white w-full max-w-md h-full overflow-y-auto shadow-xl">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold">Sort and filter</h3>
