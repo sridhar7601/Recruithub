@@ -1,75 +1,71 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { importStudents } from '../../services/studentService';
-import { ImportResult } from '../../types/student';
+import { ImportResult } from '../../types';
+import { XMarkIcon, DocumentArrowUpIcon, CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 interface StudentImportModalProps {
-  driveId: string;
+  isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  driveId: string;
 }
 
-const StudentImportModal: React.FC<StudentImportModalProps> = ({ driveId, onClose, onSuccess }) => {
+const StudentImportModal: React.FC<StudentImportModalProps> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  driveId
+}) => {
   const [file, setFile] = useState<File | null>(null);
-  const [dragging, setDragging] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const [error, setError] = useState<string | null>(null);
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const selectedFile = e.target.files[0];
+      
+      // Check if file is an Excel file
+      if (!selectedFile.name.endsWith('.xlsx')) {
+        setError('Please select an Excel (.xlsx) file');
+        return;
+      }
+      
+      setFile(selectedFile);
+      setError(null);
+    }
+  };
+  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDragging(true);
+    e.stopPropagation();
   };
-
-  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragging(false);
-  };
-
+  
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setDragging(false);
+    e.stopPropagation();
     
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const droppedFile = e.dataTransfer.files[0];
-      validateAndSetFile(droppedFile);
+      
+      // Check if file is an Excel file
+      if (!droppedFile.name.endsWith('.xlsx')) {
+        setError('Please select an Excel (.xlsx) file');
+        return;
+      }
+      
+      setFile(droppedFile);
+      setError(null);
     }
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      validateAndSetFile(e.target.files[0]);
-    }
-  };
-
-  const validateAndSetFile = (file: File) => {
-    // Check file type
-    const validExtensions = ['.xlsx', '.xls', '.csv'];
-    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-    
-    if (!validExtensions.includes(fileExtension)) {
-      setError(`Invalid file type. Please upload a file with one of these extensions: ${validExtensions.join(', ')}`);
-      return;
-    }
-    
-    // Check file size (max 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
-    if (file.size > maxSize) {
-      setError(`File is too large. Maximum size is 5MB.`);
-      return;
-    }
-    
-    setFile(file);
-    setError(null);
-  };
-
+  
   const handleUpload = async () => {
     if (!file) {
       setError('Please select a file to upload');
       return;
     }
     
-    setLoading(true);
+    setUploading(true);
     setError(null);
     
     try {
@@ -82,187 +78,196 @@ const StudentImportModal: React.FC<StudentImportModalProps> = ({ driveId, onClos
           result.skippedEntries.invalidData.count === 0) {
         setTimeout(() => {
           onSuccess();
+          onClose();
         }, 2000);
       }
     } catch (err: any) {
       console.error('Error importing students:', err);
-      setError(err.response?.data?.message || 'Failed to import student data');
+      setError(err.response?.data?.message || 'Failed to import students');
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
   };
-
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
+  
+  const resetForm = () => {
+    setFile(null);
+    setImportResult(null);
+    setError(null);
   };
-
+  
+  if (!isOpen) return null;
+  
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Import student data</h3>
-            <button 
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
-              disabled={loading}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-
-          {!loading && !importResult && (
-            <>
-              <div 
-                className={`border-2 border-dashed rounded-lg p-6 mb-4 text-center ${
-                  dragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-                } ${error ? 'border-red-300' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
+    <div className="fixed inset-0 overflow-y-auto z-50">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+          <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        
+        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div className="flex justify-between items-start">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">Import Students</h3>
+              <button
+                onClick={onClose}
+                className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none"
               >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".xlsx,.xls,.csv"
-                  className="hidden"
-                />
-                
-                <div className="flex flex-col items-center justify-center py-4">
-                  <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                  </svg>
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+            
+            <div className="mt-4">
+              {!importResult ? (
+                <>
+                  <div 
+                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-blue-500"
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                  >
+                    <DocumentArrowUpIcon className="h-12 w-12 text-gray-400" />
+                    <p className="mt-2 text-sm text-gray-600">
+                      Drag and drop your Excel file here, or click to select
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Only .xlsx files are supported
+                    </p>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept=".xlsx"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                  </div>
                   
-                  {file ? (
-                    <div className="text-center">
-                      <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {(file.size / 1024).toFixed(2)} KB
-                      </p>
-                      <button 
-                        onClick={triggerFileInput}
-                        className="mt-2 text-sm text-blue-600 hover:underline"
+                  {file && (
+                    <div className="mt-4 flex items-center justify-between bg-gray-50 p-3 rounded-md">
+                      <span className="text-sm text-gray-700">{file.name}</span>
+                      <button
+                        onClick={() => setFile(null)}
+                        className="text-gray-400 hover:text-gray-500"
                       >
-                        Change file
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-center">
-                      <p className="mb-2 text-sm text-gray-500">
-                        <span className="font-semibold">Click to upload</span> or drag and drop
-                      </p>
-                      <p className="text-xs text-gray-500">XLSX, XLS or CSV (MAX. 5MB)</p>
-                      <button 
-                        onClick={triggerFileInput}
-                        className="mt-4 px-4 py-2 bg-white border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
-                      >
-                        Select file
+                        <XMarkIcon className="h-5 w-5" />
                       </button>
                     </div>
                   )}
-                </div>
-              </div>
-
-              {error && (
-                <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700">
-                  <p className="text-sm">{error}</p>
+                  
+                  {error && (
+                    <div className="mt-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                      {error}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-green-50 border border-green-200 rounded-md p-4">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <CheckCircleIcon className="h-5 w-5 text-green-400" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm font-medium text-green-800">
+                          Successfully imported {importResult.totalInserted} students
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {importResult.skippedEntries.duplicates.count > 0 && (
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <ExclamationCircleIcon className="h-5 w-5 text-yellow-400" />
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium text-yellow-800">
+                            Skipped {importResult.skippedEntries.duplicates.count} duplicate entries
+                          </p>
+                          <ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
+                            {importResult.skippedEntries.duplicates.details.slice(0, 3).map((detail, index) => (
+                              <li key={index}>
+                                {detail.registrationNumber}: {detail.reason}
+                              </li>
+                            ))}
+                            {importResult.skippedEntries.duplicates.details.length > 3 && (
+                              <li>...and {importResult.skippedEntries.duplicates.details.length - 3} more</li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {importResult.skippedEntries.invalidData.count > 0 && (
+                    <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                      <div className="flex">
+                        <div className="flex-shrink-0">
+                          <ExclamationCircleIcon className="h-5 w-5 text-red-400" />
+                        </div>
+                        <div className="ml-3">
+                          <p className="text-sm font-medium text-red-800">
+                            Skipped {importResult.skippedEntries.invalidData.count} invalid entries
+                          </p>
+                          <ul className="mt-2 text-sm text-red-700 list-disc list-inside">
+                            {importResult.skippedEntries.invalidData.details.slice(0, 3).map((detail, index) => (
+                              <li key={index}>
+                                Row {detail.row}: {detail.errors.join(', ')}
+                              </li>
+                            ))}
+                            {importResult.skippedEntries.invalidData.details.length > 3 && (
+                              <li>...and {importResult.skippedEntries.invalidData.details.length - 3} more</li>
+                            )}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-
-              <div className="mt-6 flex justify-end gap-3">
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            {!importResult ? (
+              <>
                 <button
+                  type="button"
+                  onClick={handleUpload}
+                  disabled={!file || uploading}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
+                >
+                  {uploading ? 'Uploading...' : 'Upload'}
+                </button>
+                <button
+                  type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                  disabled={loading}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
                   Cancel
                 </button>
+              </>
+            ) : (
+              <>
                 <button
-                  onClick={handleUpload}
-                  disabled={!file || loading}
-                  className={`px-4 py-2 text-sm font-medium text-white rounded-md ${
-                    !file ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                  }`}
+                  type="button"
+                  onClick={onSuccess}
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  Upload
+                  View Students
                 </button>
-              </div>
-            </>
-          )}
-
-          {loading && (
-            <div className="py-8 flex flex-col items-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-              <p className="text-gray-700">Importing student data...</p>
-              <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
-              <div className="w-full max-w-xs bg-gray-200 rounded-full h-2.5 mt-4">
-                <div className="bg-blue-600 h-2.5 rounded-full w-3/4 animate-pulse"></div>
-              </div>
-            </div>
-          )}
-
-          {importResult && (
-            <div className="py-4">
-              <div className="mb-6 flex items-center justify-center">
-                {importResult.skippedEntries.duplicates.count === 0 && 
-                 importResult.skippedEntries.invalidData.count === 0 ? (
-                  <div className="flex flex-col items-center">
-                    <div className="rounded-full bg-green-100 p-3 mb-4">
-                      <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                      </svg>
-                    </div>
-                    <h4 className="text-lg font-medium text-gray-900">Import successful</h4>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <div className="rounded-full bg-yellow-100 p-3 mb-4">
-                      <svg className="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                      </svg>
-                    </div>
-                    <h4 className="text-lg font-medium text-gray-900">Import completed with warnings</h4>
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                <p className="text-gray-700 mb-2">
-                  <span className="font-medium">{importResult.totalInserted}</span> students successfully imported
-                </p>
-                
-                {(importResult.skippedEntries.duplicates.count > 0 || importResult.skippedEntries.invalidData.count > 0) && (
-                  <div className="mt-3">
-                    <p className="text-gray-700">Skipped entries:</p>
-                    <ul className="list-disc list-inside text-sm text-gray-600 mt-1">
-                      {importResult.skippedEntries.duplicates.count > 0 && (
-                        <li>
-                          {importResult.skippedEntries.duplicates.count} duplicates found
-                        </li>
-                      )}
-                      {importResult.skippedEntries.invalidData.count > 0 && (
-                        <li>
-                          {importResult.skippedEntries.invalidData.count} entries with invalid data
-                        </li>
-                      )}
-                    </ul>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex justify-end gap-3">
                 <button
-                  onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  type="button"
+                  onClick={resetForm}
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
-                  Done
+                  Upload Another File
                 </button>
-              </div>
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

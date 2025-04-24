@@ -150,25 +150,23 @@ const StudentEmptyState: React.FC = () => {
       </div>
 
       {/* Import Modal */}
-      {showImportModal && driveId && (
-        <StudentImportModal
-          driveId={driveId}
-          onClose={() => setShowImportModal(false)}
-          onSuccess={handleImportSuccess}
-        />
-      )}
+      <StudentImportModal
+        isOpen={showImportModal}
+        driveId={driveId || ''}
+        onClose={() => setShowImportModal(false)}
+        onSuccess={handleImportSuccess}
+      />
 
       {/* Add Student Modal */}
-      {showAddModal && drive && driveId && (
-        <AddStudentModal
-          driveId={driveId}
-          driveName={drive.name}
-          collegeId={drive.collegeId}
-          collegeName={drive.collegeName}
-          onClose={() => setShowAddModal(false)}
-          onSuccess={handleImportSuccess}
-        />
-      )}
+      <AddStudentModal
+        isOpen={showAddModal}
+        driveId={driveId || ''}
+        driveName={drive?.name || ''}
+        collegeId={drive?.collegeId || ''}
+        collegeName={drive?.collegeName || ''}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={handleImportSuccess}
+      />
     </div>
   );
 };

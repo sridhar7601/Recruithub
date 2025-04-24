@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../components/layout/Header';
-import DriveCard, { DriveCardProps } from '../../components/drives/DriveCard';
+import DriveCard from '../../components/drives/DriveCard';
 import CreateDriveModal from '../../components/drives/CreateDriveModal';
 import ScheduleDriveModal from '../../components/drives/ScheduleDriveModal';
 import { DriveDocument, CreateDriveDto } from '../../types';
 import { getDrives, createDrive, updateDrive } from '../../services/driveService';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
-const DrivesPage: React.FC = () => {
+const DrivesPage = () => {
   const navigate = useNavigate();
   const [drives, setDrives] = useState<DriveDocument[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,6 +80,7 @@ const DrivesPage: React.FC = () => {
   };
 
   const handleCardClick = (driveId: string) => {
+    // Navigate to the student data page with the drive ID
     navigate(`/drives/${driveId}`);
   };
 
@@ -230,8 +231,6 @@ const DrivesPage: React.FC = () => {
           </div>
         )}
       </main>
-      
-      {/* Test buttons removed for production */}
       
       {/* Create Drive Modal */}
       <CreateDriveModal 

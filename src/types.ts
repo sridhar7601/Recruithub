@@ -1,5 +1,167 @@
 // Types for RecruitHub application
 
+// Student types
+export interface AcademicDetailsDto {
+  tenthMarks?: string;
+  twelfthMarks?: string;
+  diplomaMarks?: string;
+  ugMarks?: string;
+  pgMarks?: string;
+}
+
+export interface GitHubDetailsDto {
+  totalScore?: number;
+  domainScore?: number;
+  contributionScore?: number;
+  domains?: string;
+  technologies?: string;
+  consideration?: boolean;
+  error?: string;
+  lastAttempt?: string;
+}
+
+export interface WeCPDataDto {
+  candidateId?: string;
+  percentage?: number;
+  programmingLanguagesUsed?: string[];
+  testStartTime?: string;
+  testDuration?: string;
+  testFinished?: boolean;
+  reportLink?: string;
+}
+
+export interface AIScoreComponentsDto {
+  github?: {
+    fullStack?: number;
+    aiml?: number;
+    contribution?: number;
+  };
+  resume?: {
+    fullStack?: {
+      frontend?: number;
+      backend?: number;
+      database?: number;
+      infrastructure?: number;
+    };
+    aiml?: {
+      core?: number;
+      genai?: number;
+    };
+  };
+}
+
+export interface AIScoreDto {
+  total?: number;
+  components?: AIScoreComponentsDto;
+  expertise?: {
+    fullStack?: string;
+    aiml?: string;
+  };
+}
+
+export interface Student {
+  studentId: string;
+  registrationNumber: string;
+  emailId: string;
+  name?: string;
+  phoneNumber?: string;
+  degree?: string;
+  department: string;
+  gender?: string;
+  dateOfBirth?: string;
+  githubProfile?: string;
+  linkedInProfile?: string;
+  resumeUrl?: string;
+  leetCodeProfile?: string;
+  academicDetails?: AcademicDetailsDto;
+  backlogHistory?: string;
+  currentBacklogs?: number;
+  aiScore?: AIScoreDto;
+  wecpTestScore?: number;
+  githubDetails?: GitHubDetailsDto;
+  githubEvaluated?: boolean;
+  resumeEvaluated?: boolean;
+  wecpData?: WeCPDataDto;
+  testBatch: string;
+  collegeId: string;
+  collegeName: string;
+  driveId: string;
+  driveName: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  // UI-specific properties
+  currentRound?: any;
+}
+
+export interface PaginatedStudentResponse {
+  data: Student[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface StudentFilterParams {
+  search?: string;
+  departments?: string[];
+  testBatches?: string[];
+  sortBy?: 'aiRank' | 'name' | 'department' | 'registrationNumber';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface DepartmentCount {
+  department: string;
+  count: number;
+}
+
+export interface RoundCount {
+  roundNumber: number;
+  count: number;
+}
+
+export interface CreateStudentDto {
+  registrationNumber: string;
+  emailId: string;
+  name?: string;
+  phoneNumber?: string;
+  degree?: string;
+  department: string;
+  gender?: string;
+  dateOfBirth?: string;
+  githubProfile?: string;
+  linkedInProfile?: string;
+  resumeUrl?: string;
+  leetCodeProfile?: string;
+  academicDetails?: AcademicDetailsDto;
+  backlogHistory?: string;
+  currentBacklogs?: number;
+  testBatch: string;
+  collegeId: string;
+  collegeName: string;
+  driveId: string;
+  driveName: string;
+}
+
+export interface ImportResult {
+  totalInserted: number;
+  skippedEntries: {
+    duplicates: {
+      count: number;
+      details: {
+        registrationNumber: string;
+        reason: string;
+      }[];
+    };
+    invalidData: {
+      count: number;
+      details: {
+        row: number;
+        errors: string[];
+      }[];
+    };
+  };
+}
+
 // College types
 export interface CollegeResponseDto {
   collegeId: string;
@@ -43,6 +205,61 @@ export interface RoundDto {
   startTime: string;
   endTime: string;
   evaluationCriteria: EvaluationCriteriaDto[];
+}
+
+// Round types
+export interface Round {
+  roundId?: string;
+  roundNumber: number;
+  name: string;
+  startTime: string;
+  endTime: string;
+  evaluationCriteria: EvaluationCriteriaDto[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export type StudentRoundStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' | 'PASSED' | 'FAILED';
+
+export interface EvaluationResult {
+  criteriaId: string;
+  value: number | string | boolean;
+  feedback?: string;
+}
+
+export interface Evaluator {
+  employeeId: string;
+  name: string;
+  emailId: string;
+}
+
+export interface StudentRound {
+  studentId: string;
+  roundNumber: number;
+  status: StudentRoundStatus;
+  panelId?: string;
+  panelName?: string;
+  evaluatedBy?: Evaluator;
+  evaluationStartTime?: string;
+  evaluationEndTime?: string;
+  evaluationResults?: EvaluationResult[];
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateStudentRoundDto {
+  status?: StudentRoundStatus;
+  panelId?: string;
+  evaluatedBy?: Evaluator;
+  evaluationStartTime?: string;
+  evaluationEndTime?: string;
+  evaluationResults?: EvaluationResult[];
+  notes?: string;
+}
+
+export interface StudentsByRound {
+  [roundNumber: number]: Student[];
 }
 
 export interface DriveDocument {
