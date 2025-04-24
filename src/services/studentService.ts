@@ -1,101 +1,26 @@
 import api from './api';
 import { PaginatedStudentResponse, Student, StudentFilterParams, ImportResult, CreateStudentDto } from '../types';
+import { PaginatedStudentResponseDto } from '../types/student';
+import axios from 'axios';
 
 export const getStudents = async (
-  driveId: string,
-  page: number = 1,
-  limit: number = 10,
-  filters?: StudentFilterParams
-): Promise<PaginatedStudentResponse> => {
-  try {
-    console.log(`Fetching students for drive ${driveId} with filters:`, filters);
-    
-    // Get the drive to get the collegeId
-    const { getDriveById } = await import('./driveService');
-    const drive = await getDriveById(driveId);
-    const collegeId = drive.collegeId;
-    
-    // Build query parameters
-    const params: any = {
-      page,
-      limit,
-      driveId,
-      collegeId
-    };
-    
-    // Add filter parameters if provided
-    if (filters) {
-      // Handle search query - search across name, email, registration number
-      if (filters.search && filters.search.trim() !== '') {
-        params.search = filters.search.trim();
-      }
-      
-    // Handle department filters
-    if (filters.departments && filters.departments.length > 0) {
-      // If only one department, use it directly
-      if (filters.departments.length === 1) {
-        params.department = filters.departments[0];
-      } else {
-        // For multiple departments, we'll need to make multiple requests and combine results
-        // This is a limitation of the current API
-        const departmentResults = await Promise.all(
-          filters.departments.map(async (dept) => {
-            const deptParams = { ...params, department: dept };
-            delete deptParams.page; // Get all results for each department
-            delete deptParams.limit;
-            
-            try {
-              const response = await api.get('/students', { params: deptParams });
-              return response.data.data || [];
-            } catch (err) {
-              console.error(`Error fetching students for department ${dept}:`, err);
-              return [];
-            }
-          })
-        );
-        
-        // Combine results from all departments
-        const allStudents = departmentResults.flat();
-        
-        // Apply pagination manually
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedStudents = allStudents.slice(startIndex, endIndex);
-        
-        // Return manually constructed response
-        return {
-          data: paginatedStudents,
-          total: allStudents.length,
-          page,
-          limit
-        };
-      }
-    }
-      
-      // Handle test batch filters
-      if (filters.testBatches && filters.testBatches.length > 0) {
-        params.testBatch = filters.testBatches.join(',');
-      }
-      
-      // Handle sorting
-      if (filters.sortBy) {
-        params.sortBy = filters.sortBy;
-      }
-      
-      if (filters.sortOrder) {
-        params.sortOrder = filters.sortOrder;
-      }
-    }
-    
-    const response = await api.get('/students', { params });
-    console.log('Student API response:', response);
-    
-    return response.data;
-  } catch (error) {
-    console.error('Error in getStudents:', error);
-    throw error;
+driveId: string, page: number = 1, limit: number = 10, currentFilters: { search: string; departments?: string[]; testBatches?: string[]; sortBy?: "aiRank" | "name" | "department" | "registrationNumber"; sortOrder?: "asc" | "desc"; },
+): Promise<any> => {
+  if (typeof driveId !== 'string') {
+    console.warn('driveId is not a string:', driveId);
   }
+
+  const params = {
+    page,
+    limit,
+    driveId,
+  };
+
+  console.log('Fetching students with params:', params);
+  const response = await api.get('/students', { params });
+  return response.data;
 };
+
 
 export const getStudentById = async (studentId: string): Promise<Student> => {
   const response = await api.get(`/students/${studentId}`);
@@ -116,13 +41,13 @@ export const importStudents = async (driveId: string, file: File): Promise<Impor
   try {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const response = await api.post(`/students/import/${driveId}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Error importing students:', error);

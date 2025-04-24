@@ -1,49 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDriveById } from '../../services/driveService';
-import getProfileEvaluatorJobs from '../../services/api';
+import { DriveDocument } from '../../types';
 import Header from '../../components/layout/Header';
-import StudentTableSkeleton from '../../components/students/StudentTableSkeleton';
+import TabNavigation, { TabItem } from '../../components/navigation/TabNavigation';
+import TabContentContainer from '../../components/navigation/TabContentContainer';
+import StudentDataContent from './tabs/StudentDataContent';
+import OverviewContent from './tabs/OverviewContent';
+import RoundsContent from './tabs/RoundsContent';
+import PreScreeningContent from './tabs/PreScreeningContent';
 
-const DriveDetailPage = () => {
+enum TabIds {
+  OVERVIEW = 'overview',
+  STUDENT_DATA = 'student_data',
+  ROUNDS = 'rounds',
+  PRESCREENING = 'prescreening',
+  SETTINGS = 'settings'
+}
+
+const DriveDetailPage: React.FC = () => {
   const { driveId } = useParams<{ driveId: string }>();
   const navigate = useNavigate();
   
-  const [drive, setDrive] = useState<any>(null);
+  const [drive, setDrive] = useState<DriveDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('student-data');
-  const [preScreeningCompleted, setPreScreeningCompleted] = useState(false);
-  
+  const [activeTab, setActiveTab] = useState<string>(TabIds.OVERVIEW);
+
   useEffect(() => {
+    if (!driveId) return;
+    
     const fetchDrive = async () => {
-      if (!driveId) return;
-      
       try {
         setLoading(true);
         const driveData = await getDriveById(driveId);
         setDrive(driveData);
-        
-        // Check if pre-screening has been completed
-        const jobsResponse = await getProfileEvaluatorJobs(driveId);
-        
-        if (jobsResponse.data && jobsResponse.data.data && jobsResponse.data.data.length > 0) {
-          const completedJobs = jobsResponse.data.data.filter(
-            (job: any) => job.status === 'COMPLETED'
-          );
-          
-          if (completedJobs.length > 0) {
-            setPreScreeningCompleted(true);
-          }
-        } else if ((driveData?.studentCount ?? 0) > 0) {
-          // If we have students but no pre-screening job, assume it's been completed
-          setPreScreeningCompleted(true);
-        }
-        
-        setLoading(false);
+        setError(null);
       } catch (err) {
         setError('Failed to load drive information');
         console.error('Error fetching drive:', err);
+      } finally {
         setLoading(false);
       }
     };
@@ -55,31 +51,17 @@ const DriveDetailPage = () => {
     navigate('/drives');
   };
 
-  const navigateToTab = (tab: string) => {
-    // For tabs represented by separate routes
-    switch (tab) {
-      case 'student-data':
-        navigate(`/drives/${driveId}`);
-        break;
-      case 'pre-screening':
-        navigate(`/drives/${driveId}/prescreening`);
-        break;
-      case 'round-1':
-        navigate(`/drives/${driveId}/round-1`);
-        break;
-      case 'rounds-2-4':
-        navigate(`/drives/${driveId}/rounds`);
-        break;
-      case 'settings':
-        navigate(`/drives/${driveId}/settings`);
-        break;
-      case 'overview':
-        navigate(`/drives/${driveId}/overview`);
-        break;
-      default:
-        setActiveTab(tab);
-    }
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
   };
+
+  const tabs: TabItem[] = [
+    { id: TabIds.OVERVIEW, label: 'Overview' },
+    { id: TabIds.STUDENT_DATA, label: 'Student Data' },
+    { id: TabIds.ROUNDS, label: 'Rounds', disabled: true },
+    { id: TabIds.PRESCREENING, label: 'Pre-screening' },
+    { id: TabIds.SETTINGS, label: 'Settings' }
+  ];
 
   if (loading) {
     return (
@@ -87,20 +69,6 @@ const DriveDetailPage = () => {
         <Header />
         <div className="p-6 flex justify-center items-center h-screen">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <Header />
-        <div className="p-6">
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md">
-            <p className="font-bold">Error</p>
-            <p>{error}</p>
-          </div>
         </div>
       </div>
     );
@@ -127,74 +95,74 @@ const DriveDetailPage = () => {
             </div>
           </div>
           <button
+            onClick={() => {}} // Handle export functionality
             className="px-4 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             Export
           </button>
         </div>
         
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="flex flex-wrap gap-2 p-4 border-b">
-            <button 
-              className={`px-4 py-2 rounded-md ${activeTab === 'overview' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-              onClick={() => navigateToTab('overview')}
-            >
-              Overview
-            </button>
-            <button 
-              className={`px-4 py-2 rounded-md ${activeTab === 'student-data' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-              onClick={() => navigateToTab('student-data')}
-            >
-              Student data
-            </button>
-            <button 
-              className={`px-4 py-2 rounded-md ${activeTab === 'pre-screening' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-              onClick={() => navigateToTab('pre-screening')}
-            >
-              Pre-screening
-            </button>
-            
-            {/* Only show Round 1 and Rounds 2-4 tabs if pre-screening is completed */}
-            {preScreeningCompleted && (
-              <>
-                <button 
-                  className={`px-4 py-2 rounded-md ${activeTab === 'round-1' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-                  onClick={() => navigateToTab('round-1')}
-                >
-                  Round 1
-                </button>
-                <button 
-                  className={`px-4 py-2 rounded-md ${activeTab === 'rounds-2-4' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-                  onClick={() => navigateToTab('rounds-2-4')}
-                >
-                  Rounds 2-4
-                </button>
-              </>
-            )}
-            
-            <button 
-              className={`px-4 py-2 rounded-md ${activeTab === 'settings' ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-600 hover:bg-gray-100'}`}
-              onClick={() => navigateToTab('settings')}
-            >
-              Settings
-            </button>
+        {/* Main content area */}
+        <div className="bg-white rounded-lg shadow">
+          {/* Tab Navigation */}
+          <div className="p-4">
+            <TabNavigation 
+              tabs={tabs} 
+              activeTab={activeTab} 
+              onTabChange={handleTabChange}
+            />
           </div>
           
-          {/* Tab content container */}
-          <div className="p-6">
-            <div className="text-center">
-              <h2 className="text-xl font-semibold mb-4">Student Data</h2>
-              <p className="text-gray-600 mb-4">
-                This page allows you to view and manage student data for this drive.
-              </p>
-              <p className="text-gray-600">
-                Use the tabs above to navigate to different sections of the drive management interface.
-              </p>
+          {/* Tab Content */}
+          <TabContentContainer activeTabId={activeTab} tabId={TabIds.OVERVIEW}>
+            <OverviewContent drive={drive} />
+          </TabContentContainer>
+          
+          <TabContentContainer activeTabId={activeTab} tabId={TabIds.STUDENT_DATA}>
+            <StudentDataContent driveId={driveId} drive={drive} />
+          </TabContentContainer>
+          
+          <TabContentContainer activeTabId={activeTab} tabId={TabIds.ROUNDS}>
+            <RoundsContent drive={drive} />
+          </TabContentContainer>
+          
+          <TabContentContainer activeTabId={activeTab} tabId={TabIds.PRESCREENING}>
+            <PreScreeningContent driveId={driveId} />
+          </TabContentContainer>
+          
+          <TabContentContainer activeTabId={activeTab} tabId={TabIds.SETTINGS}>
+            <div className="p-6">
+              <h3 className="text-lg font-semibold">Settings</h3>
+              <p className="text-gray-600 mt-2">Drive settings will be available here.</p>
             </div>
-          </div>
+          </TabContentContainer>
         </div>
       </div>
+      
+      {/* Error notification */}
+      {error && (
+        <div className="fixed bottom-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md">
+          <div className="flex">
+            <div className="py-1">
+              <svg className="h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold">Error</p>
+              <p className="text-sm">{error}</p>
+            </div>
+            <button 
+              onClick={() => setError(null)}
+              className="ml-auto"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

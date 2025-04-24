@@ -178,6 +178,4 @@ export interface StudentFilterParams {
   department?: string | string[];
   testBatch?: string | string[];
   search?: string;
-  sortBy?: 'rank' | 'name';
-  sortOrder?: 'asc' | 'desc';
 }
