@@ -484,7 +484,7 @@ const EnhancedPreScreeningContent: React.FC<PreScreeningContentProps> = ({ drive
                           // This would navigate to student rankings or other relevant view
                           console.log('Navigate to student rankings');
                         }}
-                        className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700"
+                        className="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 opacity-50 cursor-not-allowed "
                       >
                         View Student Rankings
                       </button>

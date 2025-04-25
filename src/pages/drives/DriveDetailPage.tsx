@@ -58,9 +58,9 @@ const DriveDetailPage: React.FC = () => {
   const tabs: TabItem[] = [
     { id: TabIds.OVERVIEW, label: 'Overview' },
     { id: TabIds.STUDENT_DATA, label: 'Student Data' },
-    { id: TabIds.ROUNDS, label: 'Rounds', disabled: true },
     { id: TabIds.PRESCREENING, label: 'Pre-screening' },
-    { id: TabIds.SETTINGS, label: 'Settings' }
+    { id: TabIds.ROUNDS, label: 'Round-1 ', disabled: true },
+    { id: TabIds.SETTINGS, label: 'Settings',disabled: true }
   ];
 
   if (loading) {
