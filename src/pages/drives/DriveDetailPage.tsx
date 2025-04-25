@@ -115,7 +115,7 @@ const DriveDetailPage: React.FC = () => {
           
           {/* Tab Content */}
           <TabContentContainer activeTabId={activeTab} tabId={TabIds.OVERVIEW}>
-            <OverviewContent drive={drive} />
+            <OverviewContent  />
           </TabContentContainer>
           
           <TabContentContainer activeTabId={activeTab} tabId={TabIds.STUDENT_DATA}>

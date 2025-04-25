@@ -8,7 +8,7 @@ import { DriveDocument, CreateDriveDto } from '../../types';
 import { getDrives, createDrive, updateDrive } from '../../services/driveService';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
-const DrivesPage = () => {
+const DrivesPage: React.FC = () => {
   const navigate = useNavigate();
   const [drives, setDrives] = useState<DriveDocument[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,9 +28,7 @@ const DrivesPage = () => {
       setLoading(true);
       setError(null);
       
-      console.log('Fetching drives...');
       const response = await getDrives(1, 100);
-      console.log('API Response:', response);
       
       if (!response || !response.drives) {
         console.error('Invalid response format:', response);
@@ -43,7 +41,6 @@ const DrivesPage = () => {
       const filteredDrives = response.drives.filter(drive => 
         activeTab === 'active' ? !drive.isCompleted : drive.isCompleted
       );
-      console.log('Filtered drives:', filteredDrives);
       
       // Add student count and active round for UI display if not present
       const enhancedDrives = filteredDrives.map(drive => {
@@ -55,7 +52,6 @@ const DrivesPage = () => {
           activeRound: drive.activeRound !== undefined ? drive.activeRound : roundCount
         };
       });
-      console.log('Enhanced drives:', enhancedDrives);
       
       setDrives(enhancedDrives);
     } catch (err) {
@@ -80,13 +76,11 @@ const DrivesPage = () => {
   };
 
   const handleCardClick = (driveId: string) => {
-    // Navigate to the student data page with the drive ID
     navigate(`/drives/${driveId}`);
   };
 
   const handleCreateDrive = async (driveData: CreateDriveDto) => {
     try {
-      console.log('Creating drive with data:', driveData);
       const newDrive = await createDrive(driveData);
       
       // Add UI display properties
@@ -103,9 +97,6 @@ const DrivesPage = () => {
       
       setDrives(updatedDrives);
       setCreateModalOpen(false);
-      
-      // Show success message (could be implemented with a toast notification library)
-      console.log('Drive created successfully:', newDrive.name);
       
       // Refresh the drives list to ensure we have the latest data
       fetchDrives();
@@ -124,7 +115,6 @@ const DrivesPage = () => {
 
   const handleScheduleDrive = async (driveData: CreateDriveDto & { members: string[] }) => {
     try {
-      console.log('Scheduling drive with data:', driveData);
       const newDrive = await createDrive(driveData);
       
       // Add UI display properties
@@ -141,9 +131,6 @@ const DrivesPage = () => {
       
       setDrives(updatedDrives);
       setScheduleModalOpen(false);
-      
-      // Show success message (could be implemented with a toast notification library)
-      console.log('Drive scheduled successfully:', newDrive.name);
       
       // Refresh the drives list to ensure we have the latest data
       fetchDrives();
