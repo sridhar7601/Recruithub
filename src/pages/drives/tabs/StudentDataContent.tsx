@@ -9,12 +9,14 @@ import AddStudentModal from '../../../components/students/AddStudentModal';
 
 interface StudentDataContentProps {
   driveId?: string;
-  drive: DriveDocument | null;
+  drive?: DriveDocument | null;
+  roundNumber?: string;
 }
 
-const StudentDataContent: React.FC<StudentDataContentProps> = ({ 
+const StudentDataContent: React.FC<StudentDataContentProps> = ({
   driveId,
-  drive
+  drive,
+  roundNumber,
 }) => {
   // State management
   const [students, setStudents] = useState<Student[]>([]);
@@ -28,7 +30,7 @@ const StudentDataContent: React.FC<StudentDataContentProps> = ({
   const [totalStudents, setTotalStudents] = useState<number>(0);
   const [showImportModal, setShowImportModal] = useState<boolean>(false);
   const [showAddModal, setShowAddModal] = useState<boolean>(false);
-  
+
   // Filter state
   const [filters, setFilters] = useState<StudentFilterParams>({
     page: 1,
@@ -37,7 +39,7 @@ const StudentDataContent: React.FC<StudentDataContentProps> = ({
     // sortOrder: 'desc', // Default to highest rank first
     // sortBy: 'rank'
   });
-  
+
   const [search, setSearch] = useState<string>('');
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedBatches, setSelectedBatches] = useState<string[]>([]);
@@ -45,7 +47,7 @@ const StudentDataContent: React.FC<StudentDataContentProps> = ({
   // Fetch students data
   const fetchStudents = useCallback(async () => {
     if (!driveId) return;
-    
+
     setLoading(true);
     try {
       // Fixed API call - pass the params object directly instead of stringifying it
@@ -56,30 +58,45 @@ const StudentDataContent: React.FC<StudentDataContentProps> = ({
         // department: selectedDepartments.length > 0 ? selectedDepartments : undefined,
         // testBatch: selectedBatches.length > 0 ? selectedBatches : undefined
       };
-      console.log(params," paramskkkkk");
+      console.log(params, " paramskkkkk");
       const response = await getStudents(
-        params.driveId || 'default-drive-id',
+        params.driveId || "default-drive-id",
         params.page,
         params.limit,
         {
-          search: search !== undefined ? search : '',
-          departments: selectedDepartments.length > 0 ? selectedDepartments : undefined,
-          testBatches: selectedBatches.length > 0 ? selectedBatches : undefined,
-          
+          search: search !== undefined ? search : "",
+          departments:
+            selectedDepartments.length > 0 ? selectedDepartments : undefined,
+          testBatches:
+            selectedBatches.length > 0 ? selectedBatches : undefined,
         }
       );
-      
-      setStudents(response.data);
+
+      // Filter students based on roundNumber
+      const filteredStudents = roundNumber
+        ? response.data.filter(
+            (student: Student) => student.currentRound === parseInt(roundNumber)
+          )
+        : response.data;
+
+      setStudents(filteredStudents);
       setTotalStudents(response.total);
       setTotalPages(Math.ceil(response.total / filters.limit!));
       setEmptyState(response.total === 0);
       setLoading(false);
     } catch (err) {
-      setError('Failed to load students');
+      setError("Failed to load students");
       setLoading(false);
-      console.error('Error fetching students:', err);
+      console.error("Error fetching students:", err);
     }
-  }, [driveId, filters, search, selectedDepartments, selectedBatches]);
+  }, [
+    driveId,
+    filters,
+    search,
+    selectedDepartments,
+    selectedBatches,
+    roundNumber,
+  ]);
 
   useEffect(() => {
     fetchStudents();

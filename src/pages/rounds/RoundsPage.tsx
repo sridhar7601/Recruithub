@@ -363,7 +363,7 @@ const RoundsPage: React.FC = () => {
         
         newState[targetRound] = [...newState[targetRound], {
           ...student,
-          currentRound: { ...student.currentRound, roundNumber: targetRound, status: 'NOT_STARTED' }
+          // currentRound: { ...student.currentRound, roundNumber: targetRound, status: 'NOT_STARTED' }
         }];
         
         return newState;

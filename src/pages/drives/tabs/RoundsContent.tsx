@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DriveDocument } from '../../../types';
+import InlineRoundStudentTable from '../../../components/InlineRoundStudentTable';
 
 interface RoundsContentProps {
   drive: DriveDocument | null;
 }
 
 const RoundsContent: React.FC<RoundsContentProps> = ({ drive }) => {
+  const [selectedRound, setSelectedRound] = useState<number | null>(null);
+
   if (!drive) {
     return (
       <div className="p-6">
@@ -20,7 +23,7 @@ const RoundsContent: React.FC<RoundsContentProps> = ({ drive }) => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-xl font-semibold">Rounds</h3>
-        <button 
+        <button
           className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
           disabled
         >
@@ -95,16 +98,19 @@ const RoundsContent: React.FC<RoundsContentProps> = ({ drive }) => {
               </div>
 
               <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end gap-2">
-                <button 
+                <button
                   className="px-3 py-1.5 text-sm border border-gray-300 rounded text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled
                 >
                   Edit Round
                 </button>
                 {(drive.activeRound || 1) === round.roundNumber && (
-                  <button 
+                  <button
+                    // onClick={() => {
+                    //   setSelectedRound(round.roundNumber);
+                    // }}
                     className="px-3 py-1.5 text-sm bg-blue-600 border border-blue-600 rounded text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled
+                    disabled={(drive.activeRound || 1) !== round.roundNumber}
                   >
                     View Students
                   </button>
@@ -112,6 +118,18 @@ const RoundsContent: React.FC<RoundsContentProps> = ({ drive }) => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {selectedRound && (
+        <div className="mt-6">
+          <h4 className="text-lg font-medium mb-3">
+            Students in Round {selectedRound}
+          </h4>
+          <InlineRoundStudentTable
+            driveId={drive.driveId}
+            roundNumber={selectedRound.toString()}
+          />
         </div>
       )}
     </div>

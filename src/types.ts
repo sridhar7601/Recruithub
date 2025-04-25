@@ -90,8 +90,7 @@ export interface Student {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
-  // UI-specific properties
-  currentRound?: any;
+  currentRound?: number;
 }
 
 export interface PaginatedStudentResponse {

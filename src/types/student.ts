@@ -87,6 +87,7 @@ export interface StudentRound {
 }
 
 export interface Student {
+  currentRound: number;
   studentId: string;
   registrationNumber: string;
   emailId: string;

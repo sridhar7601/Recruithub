@@ -59,7 +59,7 @@ const DriveDetailPage: React.FC = () => {
     { id: TabIds.OVERVIEW, label: 'Overview' },
     { id: TabIds.STUDENT_DATA, label: 'Student Data' },
     { id: TabIds.PRESCREENING, label: 'Pre-screening' },
-    { id: TabIds.ROUNDS, label: 'Round-1 ', disabled: true },
+    { id: TabIds.ROUNDS, label: 'Rounds', disabled: false },
     { id: TabIds.SETTINGS, label: 'Settings',disabled: true }
   ];
 
