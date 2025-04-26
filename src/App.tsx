@@ -5,6 +5,8 @@ import DrivesPage from "./pages/drives/DrivesPage";
 import Login from "./pages/auth/Login";
 import DriveDetailPage from "./pages/drives/DriveDetailPage";
 import CollegesPage from "./pages/colleges/CollegesPage";
+import Round1SettingsPage from "./pages/settings/Round1SettingsPage";
+import RoundsSettingsPage from "./pages/settings/RoundsSettingsPage";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,9 +44,19 @@ function App() {
             <DriveDetailPage />
           </ProtectedRoute>
         } />
-         <Route path="/college" element={
+        <Route path="/college" element={
           <ProtectedRoute>
             <CollegesPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings/rounds" element={
+          <ProtectedRoute>
+            <RoundsSettingsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings/rounds/:driveId" element={
+          <ProtectedRoute>
+            <Round1SettingsPage />
           </ProtectedRoute>
         } />
         {/* Additional routes will be added in future batches */}

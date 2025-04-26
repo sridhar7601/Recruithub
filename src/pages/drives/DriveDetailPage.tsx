@@ -9,12 +9,14 @@ import StudentDataContent from './tabs/StudentDataContent';
 import OverviewContent from './tabs/OverviewContent';
 import RoundsContent from './tabs/RoundsContent';
 import PreScreeningContent from './tabs/PreScreeningContent';
+import Round1SettingsContent from '../settings/Round1SettingsPage';
 
 enum TabIds {
   OVERVIEW = 'overview',
   STUDENT_DATA = 'student_data',
   ROUNDS = 'rounds',
   PRESCREENING = 'prescreening',
+  ROUND_1_SETTINGS = 'round_1_settings',
   SETTINGS = 'settings'
 }
 
@@ -60,7 +62,8 @@ const DriveDetailPage: React.FC = () => {
     { id: TabIds.STUDENT_DATA, label: 'Student Data' },
     { id: TabIds.PRESCREENING, label: 'Pre-screening' },
     { id: TabIds.ROUNDS, label: 'Rounds', disabled: false },
-    { id: TabIds.SETTINGS, label: 'Settings',disabled: true }
+    { id: TabIds.ROUND_1_SETTINGS, label: 'Round 1 Settings', disabled: false },
+    { id: TabIds.SETTINGS, label: 'Settings', disabled: false }
   ];
 
   if (loading) {
@@ -128,6 +131,10 @@ const DriveDetailPage: React.FC = () => {
           
           <TabContentContainer activeTabId={activeTab} tabId={TabIds.PRESCREENING}>
             <PreScreeningContent driveId={driveId} />
+          </TabContentContainer>
+          
+          <TabContentContainer activeTabId={activeTab} tabId={TabIds.ROUND_1_SETTINGS}>
+            <Round1SettingsContent />
           </TabContentContainer>
           
           <TabContentContainer activeTabId={activeTab} tabId={TabIds.SETTINGS}>
