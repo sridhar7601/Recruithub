@@ -176,7 +176,19 @@ export interface StudentFilterParams {
   limit?: number;
   collegeId?: string;
   driveId?: string;
-  department?: string | string[];
-  testBatch?: string | string[];
+  departments?: string[];
+  testBatches?: string[];
   search?: string;
+  sortBy?: 'name' | 'aiRank' | 'department' | 'registrationNumber';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface DepartmentCount {
+  department: string;
+  count: number;
+}
+
+export interface RoundCount {
+  roundNumber: number;
+  count: number;
 }

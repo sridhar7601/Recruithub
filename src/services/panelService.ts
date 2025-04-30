@@ -1,5 +1,5 @@
 import api from './api';
-import { CreatePanelDto, Panel, PanelMemberDto } from '../types';
+import { CreatePanelDto, Panel, PanelMemberDto } from '../types/rounds';
 
 export const getPanels = async (page: number = 1, limit: number = 10, primaryPanelMemberEmployeeId?: string): Promise<Panel[]> => {
   const response = await api.get('/panels', {

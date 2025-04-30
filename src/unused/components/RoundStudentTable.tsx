@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { getStudents } from '../services/studentService';
-import { Student, StudentFilterParams } from '../types/student';
+import { getStudents } from '../../services/studentService';
+import { Student, StudentFilterParams } from '../../types/student';
 import { DriveDocument } from '../types';
 import { debounce } from 'lodash';
-import StudentTableSkeleton from '../components/students/StudentTableSkeleton';
+import StudentTableSkeleton from '../../components/students/StudentTableSkeleton';
 
 interface RoundStudentTableProps {
   driveId?: string;
@@ -100,7 +100,7 @@ const RoundStudentTable: React.FC<RoundStudentTableProps> = ({
     debounce((value: string) => {
       setSearch(value);
       setPage(1);
-      setFilters(prev => ({ ...prev, page: 1 }));
+      setFilters((prev: any) => ({ ...prev, page: 1 }));
     }, 500),
     [setSearch, setPage, setFilters]
   );
@@ -111,7 +111,7 @@ const RoundStudentTable: React.FC<RoundStudentTableProps> = ({
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    setFilters(prev => ({ ...prev, page: newPage }));
+    setFilters((prev: any) => ({ ...prev, page: newPage }));
   };
 
   // Get unique departments and batches for filtering

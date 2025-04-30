@@ -1,5 +1,5 @@
 import api from './api';
-import { Round, StudentRound, UpdateStudentRoundDto } from '../types';
+import { Round, StudentRoundDetails, UpdateStudentRoundDetailsDto } from '../types/rounds';
 
 /**
  * Get all rounds for a drive
@@ -89,7 +89,7 @@ export const deleteDriveRound = async (driveId: string, roundNumber: number): Pr
  * @param studentId The ID of the student
  * @returns Promise with the student rounds
  */
-export const getStudentRounds = async (studentId: string): Promise<StudentRound[]> => {
+export const getStudentRounds = async (studentId: string): Promise<StudentRoundDetails[]> => {
   try {
     const response = await api.get(`/students/${studentId}/rounds`);
     return response.data;
@@ -105,7 +105,7 @@ export const getStudentRounds = async (studentId: string): Promise<StudentRound[
  * @param roundNumber The round number
  * @returns Promise with the student round
  */
-export const getStudentRound = async (studentId: string, roundNumber: number): Promise<StudentRound> => {
+export const getStudentRound = async (studentId: string, roundNumber: number): Promise<StudentRoundDetails> => {
   try {
     const response = await api.get(`/students/${studentId}/rounds/${roundNumber}`);
     return response.data;
@@ -125,8 +125,8 @@ export const getStudentRound = async (studentId: string, roundNumber: number): P
 export const updateStudentRound = async (
   studentId: string,
   roundNumber: number,
-  roundData: UpdateStudentRoundDto
-): Promise<StudentRound> => {
+  roundData: UpdateStudentRoundDetailsDto
+): Promise<StudentRoundDetails> => {
   try {
     const response = await api.put(`/students/${studentId}/rounds/${roundNumber}`, roundData);
     return response.data;
@@ -196,17 +196,17 @@ export const getStudentsByRound = async (driveId: string): Promise<Record<number
         let currentRound = student.rounds[0];
         
         // First, look for rounds with status IN_PROGRESS
-        const inProgressRound = student.rounds.find((round: StudentRound) => round.status === 'IN_PROGRESS');
+        const inProgressRound = student.rounds.find((round: StudentRoundDetails) => round.status === 'IN_PROGRESS');
         if (inProgressRound) {
           currentRound = inProgressRound;
         } else {
           // Then, look for rounds with status NOT_STARTED
-          const notStartedRound = student.rounds.find((round: StudentRound) => round.status === 'NOT_STARTED');
+          const notStartedRound = student.rounds.find((round: StudentRoundDetails) => round.status === 'NOT_STARTED');
           if (notStartedRound) {
             currentRound = notStartedRound;
           } else {
             // If no IN_PROGRESS or NOT_STARTED rounds, use the highest round number
-            for (const round of student.rounds as StudentRound[]) {
+            for (const round of student.rounds as StudentRoundDetails[]) {
               if (round.roundNumber > currentRound.roundNumber) {
                 currentRound = round;
               }
@@ -220,7 +220,7 @@ export const getStudentsByRound = async (driveId: string): Promise<Record<number
         }
         
         // Determine which group to put the student in
-        if (currentRound.status === 'PASSED' && currentRound.roundNumber === Math.max(...student.rounds.map((r: StudentRound) => r.roundNumber))) {
+        if (currentRound.status === 'PASSED' && currentRound.roundNumber === Math.max(...student.rounds.map((r: StudentRoundDetails) => r.roundNumber))) {
           // Student passed the final round, consider them hired
           studentsByRound[-1].push({...student, currentRound});
         } else if (currentRound.status === 'FAILED') {

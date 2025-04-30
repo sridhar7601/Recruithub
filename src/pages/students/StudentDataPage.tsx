@@ -5,7 +5,7 @@ import {
   StudentFilterParams, 
   DepartmentCount,
   RoundCount
-} from '../../types';
+} from '../../types/student';
 import debounce from 'lodash/debounce';
 import { 
   getStudents, 

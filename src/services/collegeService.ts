@@ -1,5 +1,5 @@
 import api from './api';
-import { CollegeResponseDto, PaginatedCollegeResponseDto } from '../types';
+import { CollegeResponseDto, PaginatedCollegeResponseDto } from '../types/colleges';
 
 /**
  * Get all colleges with pagination

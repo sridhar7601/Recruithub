@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getDriveById } from '../../services/driveService';
-import { DriveDocument } from '../../types';
+import { DriveDocument } from '../../types/drives';
 import Header from '../../components/layout/Header';
 import TabNavigation, { TabItem } from '../../components/navigation/TabNavigation';
 import TabContentContainer from '../../components/navigation/TabContentContainer';
@@ -10,6 +10,8 @@ import OverviewContent from './tabs/OverviewContent';
 import RoundsContent from './tabs/RoundsContent';
 import PreScreeningContent from './tabs/PreScreeningContent';
 import Round1SettingsContent from '../settings/Round1SettingsPage';
+import { Alert, Button, Card, Spinner } from '../../components/common';
+import { ArrowLeftIcon } from '@heroicons/react/24/outline';
 
 enum TabIds {
   OVERVIEW = 'overview',
@@ -70,9 +72,11 @@ const DriveDetailPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <div className="p-6 flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        </div>
+        <Spinner 
+          fullScreen 
+          size="lg" 
+          label="Loading drive details..." 
+        />
       </div>
     );
   }
@@ -84,29 +88,28 @@ const DriveDetailPage: React.FC = () => {
         {/* Drive header with back button */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <button 
+            <Button 
+              variant="icon"
               onClick={handleBackClick}
-              className="mr-4 text-gray-600 hover:text-gray-800"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-            </button>
+              className="mr-4"
+              icon={<ArrowLeftIcon className="h-6 w-6" />}
+              aria-label="Go back"
+            />
             <div>
               <h1 className="text-2xl font-semibold text-gray-800">{drive?.name || 'Drive'}</h1>
               <p className="text-gray-600">{drive?.collegeName || 'College'}</p>
             </div>
           </div>
-          <button
+          <Button
+            variant="secondary"
             onClick={() => {}} // Handle export functionality
-            className="px-4 py-2 rounded-md bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             Export
-          </button>
+          </Button>
         </div>
         
         {/* Main content area */}
-        <div className="bg-white rounded-lg shadow">
+        <Card shadow={true} padding="none">
           {/* Tab Navigation */}
           <div className="p-4">
             <TabNavigation 
@@ -143,32 +146,18 @@ const DriveDetailPage: React.FC = () => {
               <p className="text-gray-600 mt-2">Drive settings will be available here.</p>
             </div>
           </TabContentContainer>
-        </div>
+        </Card>
       </div>
       
       {/* Error notification */}
       {error && (
-        <div className="fixed bottom-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md">
-          <div className="flex">
-            <div className="py-1">
-              <svg className="h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <div>
-              <p className="font-bold">Error</p>
-              <p className="text-sm">{error}</p>
-            </div>
-            <button 
-              onClick={() => setError(null)}
-              className="ml-auto"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
+        <Alert
+          variant="error"
+          title="Error"
+          message={error}
+          onClose={() => setError(null)}
+          position="fixed-bottom-right"
+        />
       )}
     </div>
   );

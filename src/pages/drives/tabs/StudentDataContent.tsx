@@ -126,7 +126,7 @@ const StudentDataContent: React.FC<StudentDataContentProps> = ({
   };
 
   const handleSortChange = (sortOrder: 'asc' | 'desc') => {
-    setFilters(prev => ({ ...prev, sortOrder, sortBy: 'rank' }));
+    setFilters(prev => ({ ...prev, sortOrder, sortBy: 'aiRank' }));
   };
 
   const handleDepartmentChange = (department: string, checked: boolean) => {

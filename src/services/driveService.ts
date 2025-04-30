@@ -1,5 +1,5 @@
 import api from './api';
-import { CreateDriveDto, DriveDocument, PaginatedDriveResponse } from '../types';
+import { CreateDriveDto, DriveDocument, PaginatedDriveResponse } from '../types/drives';
 
 /**
  * Interface for department and round count data

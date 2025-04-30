@@ -1,6 +1,5 @@
 import api from './api';
-import { PaginatedStudentResponse, Student, StudentFilterParams, ImportResult, CreateStudentDto } from '../types';
-import { PaginatedStudentResponseDto } from '../types/student';
+import { Student, StudentFilterParams, ImportResult, CreateStudentDto, PaginatedStudentResponseDto } from '../types/student';
 import axios from 'axios';
 
 export const getStudents = async (
